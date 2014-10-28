@@ -31,7 +31,7 @@ use FormPDF\FormPDFHelper;
 class NotificationCenterGateway extends \NotificationCenter\Gateway\Base implements \NotificationCenter\Gateway\GatewayInterface
 {
 	/**
-	 * Print the pdf
+	 * Print the pdf and either save it or send it directly to the browser
 	 * @param object
 	 * @param array
 	 * @param string
@@ -41,47 +41,36 @@ class NotificationCenterGateway extends \NotificationCenter\Gateway\Base impleme
 	{
 		$objGateway = $this->getModel();
 		
-		if(strlen($this->file_name) > 0)
-		{
-			$GLOBALS['FORM_PDF']['filename'] = $this->file_name;
-		}
-		
+		$strPath = $GLOBALS['FORM_PDF']['path'];
 		if(strlen($this->file_path) > 0)
 		{
-			$GLOBALS['FORM_PDF']['path'] = TL_ROOT.'/'.$this->file_path;
+		   $strPath = TL_ROOT.'/'.$this->file_path;
 		}
-		
-		$arrTokens['form_pdf'] = true;
-		$arrTokens['form_pdf_plugin'] = $objGateway->form_pdf_plugin ?: 'dompdf';
-		$arrTokens['form_pdf_template'] = $objGateway->form_pdf_template ?: 'pdf_example_html';
-		$arrTokens['form_pdf_attachment'] = $objGateway->form_pdf_save;
 		
 		$objFormPDF = new FormPDFHelper();
-		$objFormPDF->processFormData($arrTokens,$arrTokens,$arrFiles);
-	}
+		$objFormPDF->strPlugin = $objGateway->form_pdf_plugin ?: 'dompdf';
+		$objFormPDF->strTemplate = $objGateway->form_pdf_template ?: 'pdf_example_html';
+		
+		// output template
+		$objTemplate = new \FrontendTemplate($this->form_pdf_template);
+		$objTemplate->setData($this->arrData);
+		$objTemplate->fields = $arrTokens;
 
+		$strHtml = $objTemplate->parse();
 
-	/**
-	 * Strip array keys
-	 * @param array
-	 * @param string
-	 * @return array
-	 */
-	protected function stripNcKeys($arrInput, $strPrefix)
-	{
-		if(count($arrInput) < 1)
+		// print pdf and save it
+		if($objGateway->form_pdf_save)
 		{
-			return array();
+			$strPdf = $objFormPDF->printPDFtoFile($strHtml,$strPath,$this->fileTitle,false);
+			return true;
 		}
-
-		$arrReturn = array();
-		foreach($arrInput as $k => $v)
+		// print pdf and send to browser
+		else
 		{
-			// strip only first appearance
-			$n = implode('',explode($strPrefix, $k, 2)); #str_replace($strPrefix,'',$k);
-			$arrReturn[$n] = $v;
+			$strPdf = $objFormPDF->printPDFtoBrowser($strHtml,$this->file_name);
+			return true;
 		}
-
-		return $arrReturn;
+		
+		return false;
 	}
 }
