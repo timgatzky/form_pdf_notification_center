@@ -52,7 +52,7 @@ class NotificationCenterGateway extends \NotificationCenter\Gateway\Base impleme
 		$objFormPDF->strTemplate = $objGateway->form_pdf_template ?: 'pdf_example_html';
 		
 		// output template
-		$objTemplate = new \FrontendTemplate($this->form_pdf_template);
+		$objTemplate = new \FrontendTemplate($objGateway->form_pdf_template);
 		$objTemplate->setData($this->arrData);
 		$objTemplate->fields = $arrTokens;
 
@@ -61,13 +61,13 @@ class NotificationCenterGateway extends \NotificationCenter\Gateway\Base impleme
 		// print pdf and save it
 		if($objGateway->form_pdf_save)
 		{
-			$strPdf = $objFormPDF->printPDFtoFile($strHtml,$strPath,$this->fileTitle,false);
+			$strPdf = $objFormPDF->printPDFtoFile($strHtml,$strPath,$objGateway->file_name,false);
 			return true;
 		}
 		// print pdf and send to browser
 		else
 		{
-			$strPdf = $objFormPDF->printPDFtoBrowser($strHtml,$this->file_name);
+			$strPdf = $objFormPDF->printPDFtoBrowser($strHtml,$objGateway->file_name);
 			return true;
 		}
 		
