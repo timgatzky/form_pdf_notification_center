@@ -7,4 +7,4 @@ form_pdf notification center gateway
 
 Information
 -------
-This extension has been supported by <a href="http://www.big-bytes.de">big-bytes | webdesign</a>.
+This extension has been sponsored by <a href="http://www.big-bytes.de">big-bytes | webdesign</a>.
