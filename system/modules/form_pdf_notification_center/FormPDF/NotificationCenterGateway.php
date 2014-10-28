@@ -41,10 +41,10 @@ class NotificationCenterGateway extends \NotificationCenter\Gateway\Base impleme
 	{
 		$objGateway = $this->getModel();
 		
-		$strPath = $GLOBALS['FORM_PDF']['path'];
-		if(strlen($this->file_path) > 0)
+		$strPath = $GLOBALS['FORM_PDF']['path'].'/';
+		if(strlen($objGateway->file_path) > 0)
 		{
-		   $strPath = TL_ROOT.'/'.$this->file_path;
+		   $strPath = TL_ROOT.'/'.$objGateway->file_path;
 		}
 		
 		$objFormPDF = new FormPDFHelper();
